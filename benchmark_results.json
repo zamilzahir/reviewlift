@@ -1,0 +1,297 @@
+{
+  "results": [
+    {
+      "pr_id": "zamilzahir/buggy-calculator#1",
+      "mode": "free_only",
+      "num_findings": 2,
+      "min_confidence": 0.8,
+      "cost_usd": 0.0,
+      "wall_seconds": 12.63452666599187,
+      "free_calls": 2,
+      "smart_calls": 0,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 8,
+          "message": "Potential edge case: Division by zero is not checked in multiply function.",
+          "severity": "warning"
+        },
+        {
+          "file": "calculator.py",
+          "line": 12,
+          "message": "Removed if-statement for checking division by zero as it's already handled in divide function.",
+          "severity": "info"
+        }
+      ]
+    },
+    {
+      "pr_id": "zamilzahir/buggy-calculator#1",
+      "mode": "smart_only",
+      "num_findings": 2,
+      "min_confidence": 0.95,
+      "cost_usd": 0.0009989999999999999,
+      "wall_seconds": 2.135814000008395,
+      "free_calls": 0,
+      "smart_calls": 1,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 10,
+          "message": "Removed division by zero check. This will cause ZeroDivisionError at runtime when b=0, breaking error handling and user experience.",
+          "severity": "critical"
+        },
+        {
+          "file": "calculator.py",
+          "line": 10,
+          "message": "Removed input validation. The divide function now lacks defensive programming practices and will fail with unhelpful error messages.",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "pr_id": "zamilzahir/buggy-calculator#1",
+      "mode": "adaptive",
+      "num_findings": 1,
+      "min_confidence": 0.8,
+      "cost_usd": 0.0,
+      "wall_seconds": 8.465845625003567,
+      "free_calls": 2,
+      "smart_calls": 0,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 8,
+          "message": "Potential edge case not handled: Division by zero is not explicitly checked in the divide function.",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "pr_id": "zamilzahir/buggy-calculator#2",
+      "mode": "free_only",
+      "num_findings": 1,
+      "min_confidence": 0.8,
+      "cost_usd": 0.0,
+      "wall_seconds": 8.873405708000064,
+      "free_calls": 2,
+      "smart_calls": 0,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 35,
+          "message": "Adding a new function 'calculate' with potential security risks as it uses eval() for arbitrary code execution.",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "pr_id": "zamilzahir/buggy-calculator#2",
+      "mode": "smart_only",
+      "num_findings": 3,
+      "min_confidence": 0.95,
+      "cost_usd": 0.001144,
+      "wall_seconds": 1.8773296250001295,
+      "free_calls": 0,
+      "smart_calls": 1,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 20,
+          "message": "Critical security vulnerability: eval() executes arbitrary code. Use ast.literal_eval() or a safe expression parser instead",
+          "severity": "critical"
+        },
+        {
+          "file": "calculator.py",
+          "line": 20,
+          "message": "No input validation or error handling for malformed expressions",
+          "severity": "high"
+        },
+        {
+          "file": "calculator.py",
+          "line": 20,
+          "message": "Missing docstring and type hints for the new function",
+          "severity": "medium"
+        }
+      ]
+    },
+    {
+      "pr_id": "zamilzahir/buggy-calculator#2",
+      "mode": "adaptive",
+      "num_findings": 3,
+      "min_confidence": 0.95,
+      "cost_usd": 0.001264,
+      "wall_seconds": 2.151785292007844,
+      "free_calls": 0,
+      "smart_calls": 1,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 20,
+          "message": "Use of eval() is a critical security vulnerability. It executes arbitrary code and can be exploited for code injection attacks. Use ast.literal_eval() or a safe expression parser instead.",
+          "severity": "critical"
+        },
+        {
+          "file": "calculator.py",
+          "line": 20,
+          "message": "No input validation or error handling. The function will crash on invalid expressions without proper error messages.",
+          "severity": "high"
+        },
+        {
+          "file": "calculator.py",
+          "line": 20,
+          "message": "Missing function docstring describing parameters, return value, and behavior.",
+          "severity": "low"
+        }
+      ]
+    },
+    {
+      "pr_id": "zamilzahir/buggy-calculator#3",
+      "mode": "free_only",
+      "num_findings": 1,
+      "min_confidence": 0.8,
+      "cost_usd": 0.0,
+      "wall_seconds": 7.030971957996371,
+      "free_calls": 2,
+      "smart_calls": 0,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 13,
+          "message": "The loop should end at n instead of n+1 when summing a range",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "pr_id": "zamilzahir/buggy-calculator#3",
+      "mode": "smart_only",
+      "num_findings": 1,
+      "min_confidence": 0.95,
+      "cost_usd": 0.0008529999999999999,
+      "wall_seconds": 1.6539812920091208,
+      "free_calls": 0,
+      "smart_calls": 1,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 17,
+          "message": "Logic error: range(1, n) excludes the upper bound n, changing function behavior. Original range(1, n + 1) sums 1 to n inclusive; new range(1, n) sums 1 to n-1. This breaks the function contract.",
+          "severity": "critical"
+        }
+      ]
+    },
+    {
+      "pr_id": "zamilzahir/buggy-calculator#3",
+      "mode": "adaptive",
+      "num_findings": 1,
+      "min_confidence": 0.8,
+      "cost_usd": 0.0,
+      "wall_seconds": 8.375776375003625,
+      "free_calls": 2,
+      "smart_calls": 0,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 16,
+          "message": "The loop in sum_range function does not include the number 'n'. This might cause unexpected results for the last number in the range.",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "pr_id": "zamilzahir/buggy-calculator#4",
+      "mode": "free_only",
+      "num_findings": 1,
+      "min_confidence": 0.8,
+      "cost_usd": 0.0,
+      "wall_seconds": 9.703828582991264,
+      "free_calls": 2,
+      "smart_calls": 0,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 32,
+          "message": "Hardcoding API keys is not recommended, consider using environment variables or secure secrets storage.",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "pr_id": "zamilzahir/buggy-calculator#4",
+      "mode": "smart_only",
+      "num_findings": 2,
+      "min_confidence": 0.95,
+      "cost_usd": 0.001034,
+      "wall_seconds": 3.2821179589955136,
+      "free_calls": 0,
+      "smart_calls": 1,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 20,
+          "message": "Hardcoded API key exposed in source code. This is a critical security vulnerability that allows unauthorized access to external services.",
+          "severity": "critical"
+        },
+        {
+          "file": "calculator.py",
+          "line": 22,
+          "message": "Function returns hardcoded secret directly. API keys should never be stored in code or returned unencrypted. Use environment variables or secure secret management instead.",
+          "severity": "critical"
+        }
+      ]
+    },
+    {
+      "pr_id": "zamilzahir/buggy-calculator#4",
+      "mode": "adaptive",
+      "num_findings": 3,
+      "min_confidence": 0.95,
+      "cost_usd": 0.001254,
+      "wall_seconds": 2.294162582998979,
+      "free_calls": 0,
+      "smart_calls": 1,
+      "findings": [
+        {
+          "file": "calculator.py",
+          "line": 20,
+          "message": "Hardcoded API key exposed in source code. This credential should never be committed to version control.",
+          "severity": "critical"
+        },
+        {
+          "file": "calculator.py",
+          "line": 23,
+          "message": "Function returns sensitive credential directly without any access control or logging. This increases exposure risk.",
+          "severity": "high"
+        },
+        {
+          "file": "calculator.py",
+          "line": 20,
+          "message": "API key format suggests Stripe live key. If compromised, attackers could perform unauthorized transactions or access sensitive payment data.",
+          "severity": "critical"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "free_only": {
+      "total_cost_usd": 0.0,
+      "avg_cost_usd": 0.0,
+      "avg_wall_seconds": 9.561,
+      "avg_findings": 1.25,
+      "total_findings": 5
+    },
+    "smart_only": {
+      "total_cost_usd": 0.00403,
+      "avg_cost_usd": 0.001007,
+      "avg_wall_seconds": 2.237,
+      "avg_findings": 2.0,
+      "total_findings": 8
+    },
+    "adaptive": {
+      "total_cost_usd": 0.002518,
+      "avg_cost_usd": 0.000629,
+      "avg_wall_seconds": 5.322,
+      "avg_findings": 2.0,
+      "total_findings": 8
+    }
+  }
+}

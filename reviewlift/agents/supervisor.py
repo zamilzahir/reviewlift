@@ -9,19 +9,25 @@ from reviewlift.core.router import classify_chunk, next_tier, should_escalate
 from reviewlift.core.tracing import Tracer
 
 MAX_WORKERS = 4
+VALID_MODES = ("adaptive", "free_only", "smart_only")
 
 
 class Supervisor:
     """Splits a PR diff into one task per file, dispatches each to a worker
-    (running concurrently, not sequentially), and merges the results.
+    concurrently, and merges results.
 
-    Each worker owns the full tier-escalation loop for its file: it starts
-    at whichever tier the router picks, and climbs to the next tier if the
-    current one isn't confident enough — independently of what any other
-    worker is doing.
+    mode controls routing, so the same PR can be benchmarked three ways:
+    - "adaptive" (default): real ReviewLift behavior — router picks the
+      starting tier, escalates on low confidence, up to advanced.
+    - "free_only": simulates never paying for the advanced tier. Starts at
+      low, always takes one free upgrade to mid, but never reaches advanced.
+    - "smart_only": simulates sending everything to the expensive model.
+      Every file goes straight to advanced, no escalation loop.
     """
 
-    def __init__(self, max_workers: int = MAX_WORKERS):
+    def __init__(self, max_workers: int = MAX_WORKERS, mode: str = "adaptive"):
+        if mode not in VALID_MODES:
+            raise ValueError(f"mode must be one of {VALID_MODES}, got '{mode}'")
         self.tiers = {
             "low": LowTierReviewerAgent(),
             "mid": MidTierReviewerAgent(),
@@ -29,10 +35,24 @@ class Supervisor:
         }
         self.tracer = Tracer()
         self.max_workers = max_workers
+        self.mode = mode
+
+    def _starting_tier(self, content: str) -> str:
+        if self.mode == "smart_only":
+            return "advanced"
+        if self.mode == "free_only":
+            return "low"
+        return classify_chunk(content)
+
+    def _next_tier(self, current_tier: str) -> str | None:
+        if self.mode == "smart_only":
+            return None
+        if self.mode == "free_only":
+            return "mid" if current_tier == "low" else None
+        return next_tier(current_tier)
 
     def _review_chunk(self, file_name: str, content: str) -> tuple[ReviewResult, CostReport]:
-        """Worker logic: review one file's diff, escalating tiers as needed."""
-        tier = classify_chunk(content)
+        tier = self._starting_tier(content)
         chunk_cost = CostReport()
 
         while True:
@@ -45,8 +65,14 @@ class Supervisor:
             chunk_cost.total_cost_usd += result.cost_usd
             chunk_cost.seconds_elapsed += result.seconds_elapsed
 
-            escalate = should_escalate(result.confidence)
-            escalated_to = next_tier(tier) if escalate else None
+            if self.mode == "adaptive":
+                should_climb = should_escalate(result.confidence)
+            elif self.mode == "free_only":
+                should_climb = tier == "low"
+            else:  # smart_only
+                should_climb = False
+
+            escalated_to = self._next_tier(tier) if should_climb else None
 
             self.tracer.log_call(
                 tier=tier,
@@ -69,7 +95,6 @@ class Supervisor:
         merged = ReviewResult(confidence=1.0)
         cost_report = CostReport()
 
-        # Workers run concurrently — one file's review doesn't block another's.
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as pool:
             futures = {
                 pool.submit(self._review_chunk, chunk["file"], chunk["content"]): chunk["file"]

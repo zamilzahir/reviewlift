@@ -4,8 +4,12 @@
 CONFIDENCE_THRESHOLD = 0.6
 
 # Simple heuristic: certain keywords in a diff suggest it touches risky logic
-# (auth, security, database, payments) and should skip straight to a higher tier.
-HIGH_RISK_KEYWORDS = ["auth", "password", "token", "sql", "payment", "security", "encrypt"]
+# (auth, security, database, payments, code execution) and should skip
+# straight to a higher tier.
+HIGH_RISK_KEYWORDS = [
+    "auth", "password", "token", "sql", "payment", "security", "encrypt",
+    "eval(", "exec(", "api_key", "secret",
+]
 
 
 def classify_chunk(chunk: str) -> str:
