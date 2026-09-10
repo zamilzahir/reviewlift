@@ -11,12 +11,22 @@ from mcp.server.fastmcp import FastMCP
 
 GITHUB_API_BASE = "https://api.github.com"
 PR_ID_PATTERN = re.compile(r"^([\w.-]+)/([\w.-]+)#(\d+)$")
+PR_URL_PATTERN = re.compile(
+    r"^https?://(?:www\.)?github\.com/([\w.-]+)/([\w.-]+)/pull/(\d+)/?"
+)
 
 mcp = FastMCP("reviewlift-github")
 
 
 def _parse_pr_id(pr_id: str) -> tuple[str, str, str]:
-    match = PR_ID_PATTERN.match(pr_id.strip())
+    """Accepts either a full GitHub PR URL or the short owner/repo#number form."""
+    cleaned = pr_id.strip()
+
+    url_match = PR_URL_PATTERN.match(cleaned)
+    if url_match:
+        return url_match.groups()
+
+    match = PR_ID_PATTERN.match(cleaned)
     if not match:
         raise ValueError(
             f"'{pr_id}' isn't a valid PR id. Expected format: owner/repo#number "

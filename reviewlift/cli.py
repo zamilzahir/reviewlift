@@ -6,6 +6,7 @@ from dataclasses import asdict
 from reviewlift.agents.summarizer import SummarizerAgent
 from reviewlift.agents.supervisor import Supervisor
 from reviewlift.core.cache import get_cached, set_cached
+from reviewlift.core.savings import estimate_savings
 from reviewlift.memory.store import MemoryStore
 from reviewlift.tools.mcp_server import get_diff
 
@@ -38,6 +39,9 @@ def run_review(pr_id: str, memory: MemoryStore) -> dict:
         "confidence": result.confidence,
         "cost_report": asdict(cost_report),
         "trace_summary": supervisor.tracer.summary(),
+        "savings": estimate_savings(
+            cost_report.free_calls, cost_report.smart_calls, cost_report.total_cost_usd
+        ),
     }
     memory.save(pr_id, output)
     set_cached(diff, output)
